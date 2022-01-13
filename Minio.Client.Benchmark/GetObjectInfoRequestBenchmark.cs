@@ -14,13 +14,13 @@ namespace Minio.Client.Benchmark
         [Benchmark(Baseline = true)]
         public async Task<ObjectStat> Restsharp()
         {
-            return await _restSharpMinioClient.StatObjectAsync("mynewbucket", "blablabla.txt");
+            return await _restSharpMinioClient.StatObjectAsync(BucketName, FileName);
         }
 
         [Benchmark]
         public async Task<ObjectInformation> HttpClient()
         {
-            return await _client.GetObjectInfoAsync("mynewbucket", "blablabla.txt");
+            return await _client.GetObjectInfoAsync(BucketName, FileName);
         }
     }
 }

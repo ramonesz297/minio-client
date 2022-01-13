@@ -15,9 +15,9 @@ namespace Minio.Client.Benchmark
         private MemoryStream content = null!;
         private MemoryStream content2 = null!;
 
-        public override void Setup()
+        public override async Task Setup()
         {
-            base.Setup();
+            await base.Setup();
             content = new MemoryStream(10 * 1024 * 1024);
             content2 = new MemoryStream(10 * 1024 * 1024);
             var guid = Guid.NewGuid().ToByteArray();
@@ -42,14 +42,14 @@ namespace Minio.Client.Benchmark
         public async Task Restsharp()
         {
             content.Seek(0, SeekOrigin.Begin);
-            await _restSharpMinioClient.PutObjectAsync("mynewbucket", "blablabla.txt", content, content.Length);
+            await _restSharpMinioClient.PutObjectAsync(BucketName, $"{Guid.NewGuid()}.txt", content, content.Length);
         }
 
         [Benchmark()]
         public async Task HttpClient()
         {
             content2.Seek(0, SeekOrigin.Begin);
-            await _client.PutObjectAsync("mynewbucket", "blablabla.txt", new MinioFileRequest(content2), true);
+            await _client.PutObjectAsync(BucketName, $"{Guid.NewGuid()}.txt", new MinioFileRequest(content2), true);
         }
     }
 }

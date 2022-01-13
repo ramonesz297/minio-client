@@ -12,31 +12,32 @@ namespace Minio.Client.Benchmark
     [SimpleJob(RuntimeMoniker.Net60)]
     public class PresignedRequestBenchmark : BaseMinioBenchmark
     {
-        private static readonly Uri baseUrl = new Uri("https://play.min.io");
-        private static readonly MinioOptions o = new MinioOptions()
+        private Uri baseUrl = null!;
+
+        private MinioOptions options = null!;
+
+        public override async Task Setup()
         {
-            AccessKey = "asdasdas",
-            SecretKey = "asdasdasd"
-        };
+            baseUrl = new Uri("https://play.min.io");
+            options = new MinioOptions()
+            {
+                AccessKey = "asdasdas",
+                SecretKey = "asdasdasd"
+            };
+            await base.Setup();
+        }
 
 
-        [Benchmark(Baseline = true, OperationsPerInvoke = 1000)]
+        [Benchmark(Baseline = true, OperationsPerInvoke = 100)]
         public async Task<string> Restsharp()
         {
-            return await _restSharpMinioClient.PresignedGetObjectAsync("mynewbucket", "blablabla.txt", 777);
+            return await _restSharpMinioClient.PresignedGetObjectAsync(BucketName, FileName, 777);
         }
 
-        [Benchmark(OperationsPerInvoke = 1000)]
+        [Benchmark(OperationsPerInvoke = 100)]
         public Uri? HttpClient_url()
         {
-            return new Uri(baseUrl, "mynewbucket/blablabla.txt").PresignUrl(HttpMethod.Get, 777, o);
-        }
-
-        [Benchmark(OperationsPerInvoke = 1000)]
-        public HttpRequestMessage HttpClient_request()
-        {
-
-            return _client.PresignedGetObjectRequest("mynewbucket", "blablabla.txt", 777);
+            return new Uri(baseUrl, $"{BucketName}/{FileName}").PresignUrl(HttpMethod.Get, 777, options);
         }
     }
 }
