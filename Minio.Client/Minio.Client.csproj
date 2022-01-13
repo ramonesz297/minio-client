@@ -5,7 +5,10 @@
 		<LangVersion>8.0</LangVersion>
 		<Nullable>disable</Nullable>
 		<PackageId>Minio.Client</PackageId>
+		<Authors>ramonesz297</Authors>
+		<PackageVersion>1.0.0</PackageVersion>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/ramonesz297/minio-client</RepositoryUrl>
 		<PackageDescription>Http client for Minio</PackageDescription>
 		<AnalysisLevel>latest</AnalysisLevel>
 	</PropertyGroup>
