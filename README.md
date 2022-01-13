@@ -59,7 +59,7 @@ services.AddHttpClient<MinioHttpClient>(o=>
 - Add integration with ```Microsoft.Extensions.DependencyInjection```
 
 
-## benchamrk
+## benchamrks
 
 ### GetObjectInfo
 |     Method |                  Job |              Runtime |     Mean |    Error |   StdDev | Ratio | RatioSD | Allocated |
