@@ -24,7 +24,7 @@ services.AddHttpClient<MinioHttpClient>(o=>
 
 ```
 
-## configure MinioOptions
+## MinioOptions
 
 - AccessKey
 - SecretKey
