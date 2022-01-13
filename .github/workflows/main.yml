@@ -32,9 +32,9 @@ jobs:
 
       - name: pack
         if: success()
-        run: dotnet pack ./Minio.Client/Minio.Client.csproj -c Release -o out -p:PackageVersion=1.0.${{ github.run_number }} --include-symbols --include-source
+        run: dotnet pack .\Minio.Client\Minio.Client.csproj -c Release -o out -p:PackageVersion=1.0.${{ github.run_number }} --include-symbols --include-source
       
       - name: publush
         if: success()
-        run: dotnet nuget push ./out/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_ACCESS_TOKEN}} --skip-duplicate
+        run: dotnet nuget push .\out\*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_ACCESS_TOKEN}} --skip-duplicate
      
