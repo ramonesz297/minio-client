@@ -12,20 +12,7 @@ jobs:
       name: main
     steps:
       - uses: actions/checkout@v2
-
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.7
-        with:
-          versionSpec: '5.x'
-
-      - name: Use GitVersion
-        id: gitversion # step id used as reference for output values
-        uses: gittools/actions/gitversion/execute@v0.9.7
-      
-      - run: |
-          echo "NuGetVersionV2: ${{ steps.gitversion.outputs.nuGetVersionV2 }}"
-          echo "NuGetPreReleaseTagV2: ${{ steps.gitversion.outputs.CommitsSinceVersionSourcePadded }}"
-    
+   
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
@@ -45,7 +32,7 @@ jobs:
 
       - name: pack
         if: success()
-        run: dotnet pack .\Minio.Client\Minio.Client.csproj -c Release -o out -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}-${{ steps.gitversion.outputs.CommitsSinceVersionSourcePadded }} --include-symbols --include-source
+        run: dotnet pack .\Minio.Client\Minio.Client.csproj -c Release -o out --include-symbols --include-source
       
       - name: publush
         if: success()
