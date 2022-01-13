@@ -17,7 +17,7 @@ jobs:
         with:
           dotnet-version: 6.0.x
       - name: tests
-        run: dotnet test -c Release --logger trx --results-directory out-tests
+        run: dotnet test .\Minio.Client.Test\Minio.Client.Test.csproj -c Release --logger trx --results-directory out-tests
       
       - name: Test Report
         uses: dorny/test-reporter@v1
@@ -50,7 +50,7 @@ jobs:
       - name: Package | Publish
         uses: drusellers/publish-nuget@v3
         with:
-          project-file-path: .\Minio.Client\Minio.Client.csproj
+          project-file-path: ./Minio.Client/Minio.Client.csproj
           version: ${{ steps.release.outputs.tag }}
           tag-format: '*'
           nuget-key: ${{ secrets.NUGET_ACCESS_TOKEN }}
