@@ -57,3 +57,25 @@ services.AddHttpClient<MinioHttpClient>(o=>
 - More unit tests
 - Implement all available apis
 - Add integration with ```Microsoft.Extensions.DependencyInjection```
+
+
+## benchamrks
+
+### GetObjectInfo
+|     Method |                  Job |              Runtime |     Mean |    Error |   StdDev | Ratio | RatioSD | Allocated |
+|----------- |--------------------- |--------------------- |---------:|---------:|---------:|------:|--------:|----------:|
+|  Restsharp |             .NET 6.0 |             .NET 6.0 | 531.3 ms | 10.49 ms | 19.19 ms |  1.00 |    0.00 |     87 KB |
+| HttpClient |             .NET 6.0 |             .NET 6.0 | 176.0 ms |  3.43 ms |  6.19 ms |  0.33 |    0.02 |     16 KB |
+|            |                      |                      |          |          |          |       |         |           |
+|  Restsharp | .NET Framework 4.7.2 | .NET Framework 4.7.2 | 175.4 ms |  2.54 ms |  1.99 ms |  1.00 |    0.00 |     85 KB |
+| HttpClient | .NET Framework 4.7.2 | .NET Framework 4.7.2 | 184.1 ms |  4.21 ms | 12.01 ms |  1.05 |    0.04 |     55 KB |
+
+### Get presigned url
+|         Method |                  Job |              Runtime |     Mean |    Error |   StdDev | Ratio |  Gen 0 | Allocated |
+|--------------- |--------------------- |--------------------- |---------:|---------:|---------:|------:|-------:|----------:|
+|      Restsharp |             .NET 6.0 |             .NET 6.0 | 468.6 ns |  6.05 ns |  5.37 ns |  1.00 | 0.0757 |     238 B |
+| HttpClient_url |             .NET 6.0 |             .NET 6.0 | 213.4 ns |  0.35 ns |  0.27 ns |  0.45 | 0.0302 |      95 B |
+|                |                      |                      |          |          |          |       |        |           |
+|      Restsharp | .NET Framework 4.7.2 | .NET Framework 4.7.2 | 874.1 ns | 12.45 ns | 11.04 ns |  1.00 | 0.1428 |     451 B |
+| HttpClient_url | .NET Framework 4.7.2 | .NET Framework 4.7.2 | 445.9 ns |  8.40 ns | 10.32 ns |  0.51 | 0.0745 |     235 B |
+
