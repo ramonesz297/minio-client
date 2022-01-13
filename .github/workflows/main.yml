@@ -1,8 +1,8 @@
 name: Publish
 
 on:
-  push:
-    branches: [ master ]
+  release:
+    types: [published]
 
 jobs:
   publish:
@@ -21,6 +21,12 @@ jobs:
       - name: tests
         run: dotnet test -c Release --logger trx --results-directory out-tests
       
+      - run: |
+          ref="${package_version//[vV]/}"
+          echo "current release - $ref"
+        env:
+          package_version: ${{github.event.release.tag_name}}
+          
       - name: Test Report
         uses: dorny/test-reporter@v1
         if: success() || failure()
@@ -32,7 +38,7 @@ jobs:
 
       - name: pack
         if: success()
-        run: dotnet pack .\Minio.Client\Minio.Client.csproj -c Release -o out --include-symbols --include-source
+        run: dotnet pack .\Minio.Client\Minio.Client.csproj -c Release -o out  -p:PackageVersion=$ref --include-symbols --include-source
       
       - name: publush
         if: success()
