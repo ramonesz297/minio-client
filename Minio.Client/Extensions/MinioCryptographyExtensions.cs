@@ -64,11 +64,11 @@ namespace Minio.Client
             var input = sb.ToString();
 
             using var owner = System.Buffers.MemoryPool<byte>.Shared.Rent(input.Length);
-            
+
             var count = Encoding.UTF8.GetBytes(input.AsSpan(), owner.Memory.Span);
 
             using var sha = SHA256.Create();
-            
+
             sha.TryComputeHash(owner.Memory.Span[..count], owner.Memory.Span, out count);
 
             return Convert.ToHexString(owner.Memory.Span[..count]).ToLower();

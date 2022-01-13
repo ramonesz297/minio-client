@@ -1,5 +1,4 @@
 ﻿using Minio.Client.Internal;
-using System;
 using System.Collections.Generic;
 using System.IO;
 

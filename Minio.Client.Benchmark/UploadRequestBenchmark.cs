@@ -1,9 +1,9 @@
-﻿using System;
-using BenchmarkDotNet.Attributes;
-using System.Threading.Tasks;
-using System.IO;
+﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Jobs;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Minio.Client.Benchmark
 {
@@ -37,7 +37,7 @@ namespace Minio.Client.Benchmark
             content2.Dispose();
         }
 
-  
+
         [Benchmark(Baseline = true)]
         public async Task Restsharp()
         {

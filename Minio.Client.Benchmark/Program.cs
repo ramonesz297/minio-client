@@ -1,5 +1,4 @@
-﻿using BenchmarkDotNet;
-using BenchmarkDotNet.Running;
+﻿using BenchmarkDotNet.Running;
 
 namespace Minio.Client.Benchmark
 {

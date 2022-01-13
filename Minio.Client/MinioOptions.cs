@@ -1,5 +1,4 @@
 ﻿using Minio.Client.Internal;
-using System;
 using System.Text;
 
 namespace Minio.Client
@@ -11,26 +10,9 @@ namespace Minio.Client
         private long _maxSingleSizeUpload = MinioLimitation.MinPartSize;
         private long? _defaultMultipartSize;
 
-        public bool UseSsl { get; set; }
-
         public string AccessKey { get; set; }
 
-        public long MaxSingleSizeUpload { get => _maxSingleSizeUpload; set => _maxSingleSizeUpload = MinioLimitation.GetPartSize(value); }
-
-        public long? DefaultMultipartSize
-        {
-            get => _defaultMultipartSize; set
-            {
-                if (value.HasValue)
-                {
-                    _defaultMultipartSize = MinioLimitation.GetPartSize(value.Value);
-                }
-                else
-                {
-                    _defaultMultipartSize = value;
-                }
-            }
-        }
+        public string SessionToken { get; set; }
 
         public string SecretKey
         {
@@ -53,7 +35,22 @@ namespace Minio.Client
             }
         }
 
-        public string SessionToken { get; set; }
+        public long MaxSingleSizeUpload { get => _maxSingleSizeUpload; set => _maxSingleSizeUpload = MinioLimitation.GetPartSize(value); }
+
+        public long? DefaultMultipartSize
+        {
+            get => _defaultMultipartSize; set
+            {
+                if (value.HasValue)
+                {
+                    _defaultMultipartSize = MinioLimitation.GetPartSize(value.Value);
+                }
+                else
+                {
+                    _defaultMultipartSize = value;
+                }
+            }
+        }
 
         public bool IsAnonymous => string.IsNullOrEmpty(SecretKey) && string.IsNullOrEmpty(AccessKey);
 
