@@ -18,7 +18,7 @@ jobs:
         with:
           dotnet-version: 6.0.x
       - name: tests
-        run: dotnet test .\Minio.Client.Test\Minio.Client.Test.csproj -c Release --logger trx --results-directory out-tests
+        run: dotnet test .\Minio.Client.Http.Test\Minio.Client.Http.Test.csproj -c Release --logger trx --results-directory out-tests
       
       - name: report
         uses: dorny/test-reporter@v1
@@ -31,7 +31,7 @@ jobs:
       
       - name: pack
         if: success()
-        run: dotnet pack .\Minio.Client\Minio.Client.csproj -c Release -o out --include-symbols --include-source
+        run: dotnet pack .\Minio.Client.Http\Minio.Client.Http.csproj -c Release -o out --include-symbols --include-source
   
       - name: publish
         if: success()
