@@ -4,14 +4,15 @@ on:
   release:
     types: [published]
 
-jobs:
-  test:
-    name: run tests
+jobs:            
+  publish:
+    name: build, pack & publish
     runs-on: windows-latest
     environment:
       name: main
     steps:
       - uses: actions/checkout@v2
+          
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
@@ -27,26 +28,11 @@ jobs:
             path: out-tests/*.trx    
             reporter: dotnet-trx
             fail-on-error: 'true'
-            
-  publish:
-    needs: [test]
-    if: success()
-    name: build, pack & publish
-    runs-on: ubuntu-latest
-    environment:
-      name: main
-    steps:
-      - uses: actions/checkout@v2
-          
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 6.0.x
       
       - name: pack
         if: success()
-        run: dotnet pack ./Minio.Client.Test/Minio.Client.Test.csproj -c Release -o ./out/ --include-symbols --include-source
+        run: dotnet pack .\Minio.Client.Test\Minio.Client.csproj -c Release -o out --include-symbols --include-source
   
       - name: publush
         if: success()
-        run: dotnet nuget push ./out/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_ACCESS_TOKEN}} --skip-duplicate
+        run: dotnet nuget push .\out\*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_ACCESS_TOKEN}} --skip-duplicate
