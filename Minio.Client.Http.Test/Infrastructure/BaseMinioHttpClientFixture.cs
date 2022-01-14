@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Minio.Client.Http;
 using System;
 using System.IO;
 using System.Threading.Tasks;

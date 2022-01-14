@@ -23,7 +23,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Minio.Client\Minio.Client.Http.csproj" />
+	  <ProjectReference Include="..\Minio.Client.Http\Minio.Client.Http.csproj" />
 	</ItemGroup>
+
+
 
 </Project>
