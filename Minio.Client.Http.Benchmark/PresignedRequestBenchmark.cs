@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
-using Minio.Client.Http;
 using Minio.Client.Http.Extensions;
 using System;
 using System.Net.Http;
@@ -14,14 +13,14 @@ namespace Minio.Client.Http.Benchmark
     [SimpleJob(RuntimeMoniker.Net60)]
     public class PresignedRequestBenchmark : BaseMinioBenchmark
     {
-        private Uri baseUrl = null!;
+        private Uri _baseUrl = null!;
 
-        private MinioOptions options = null!;
+        private MinioOptions _options = null!;
 
         public override async Task Setup()
         {
-            baseUrl = new Uri("https://play.min.io");
-            options = new MinioOptions()
+            _baseUrl = new Uri("https://play.min.io");
+            _options = new MinioOptions()
             {
                 AccessKey = "asdasdas",
                 SecretKey = "asdasdasd"
@@ -39,7 +38,7 @@ namespace Minio.Client.Http.Benchmark
         [Benchmark(OperationsPerInvoke = 100)]
         public Uri? HttpClient_url()
         {
-            return new Uri(baseUrl, $"{BucketName}/{FileName}").PresignUrl(HttpMethod.Get, 777, options);
+            return new Uri(_baseUrl, $"{BucketName}/{FileName}").PresignUrl(HttpMethod.Get, 777, _options);
         }
     }
 }

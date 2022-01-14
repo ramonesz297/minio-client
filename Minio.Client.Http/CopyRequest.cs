@@ -22,7 +22,7 @@ namespace Minio.Client.Http
             Conditions = conditions;
             Metadata = metadata ?? new Dictionary<string, IEnumerable<string>>();
             MaxObjectCopySize = maxSingleSizeUpload.HasValue ? MinioLimitation.GetPartSize(maxSingleSizeUpload.Value) : (long?)null;
-            MultipartSize = multipartSize.HasValue ? MinioLimitation.GetPartSize(multipartSize.Value) : (long?)null; ;
+            MultipartSize = multipartSize.HasValue ? MinioLimitation.GetPartSize(multipartSize.Value) : (long?)null;
         }
 
         public string SourceBucketName { get; }

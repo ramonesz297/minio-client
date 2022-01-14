@@ -14,7 +14,7 @@ namespace Minio.Client.Http.Internal
             _leaveOpen = leaveOpen;
         }
 
-        internal Stream UnderlingStream => _content;
+        internal Stream UnderlyingStream => _content;
 
         protected override void Dispose(bool disposing)
         {
