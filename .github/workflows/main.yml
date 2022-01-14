@@ -4,35 +4,10 @@ on:
   release:
     types: [published]
 
-jobs:
-  test:
-    name: run tests
-    runs-on: windows-latest
-    environment:
-      name: main
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 6.0.x
-      - name: tests
-        run: dotnet test .\Minio.Client.Test\Minio.Client.Test.csproj -c Release --logger trx --results-directory out-tests
-      
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-            name: test run
-            path: out-tests/*.trx    
-            reporter: dotnet-trx
-            fail-on-error: 'true'
-            
+jobs:            
   publish:
-    needs: [test]
-    if: success()
     name: build, pack & publish
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     environment:
       name: main
     steps:
@@ -42,11 +17,22 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.0.x
+      - name: tests
+        run: dotnet test .\Minio.Client.Test\Minio.Client.Test.csproj -c Release --logger trx --results-directory out-tests
+      
+      - name: report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+            name: test run
+            path: out-tests/*.trx    
+            reporter: dotnet-trx
+            fail-on-error: 'true'
       
       - name: pack
         if: success()
-        run: dotnet pack ./Minio.Client.Test/Minio.Client.Test.csproj -c Release -o out --include-symbols --include-source
+        run: dotnet pack .\Minio.Client\Minio.Client.csproj -c Release -o out --include-symbols --include-source
   
-      - name: publush
+      - name: publish
         if: success()
-        run: dotnet nuget push ./out/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_ACCESS_TOKEN}} --skip-duplicate
+        run: dotnet nuget push .\out\*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_ACCESS_TOKEN}} --skip-duplicate
