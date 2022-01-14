@@ -100,6 +100,11 @@ namespace Minio.Client.Http
             return new HttpRequestMessage(HttpMethod.Put, new Uri(_httpClient.BaseAddress, $"{bucketName}/{objectName}")).PresignUrl(expires, _options.Value);
         }
 
+        public Uri PresignedPutObjectUrl(string bucketName, string objectName, int expires)
+        {
+            return new Uri(_httpClient.BaseAddress, $"{bucketName}/{objectName}").PresignUrl(HttpMethod.Put, expires, _options.Value);
+        }
+
         public async Task<ObjectInformation> CorePutObjectAsync(string bucketName, string objectName, MinioFileRequest file, CancellationToken cancellationToken = default)
         {
             return await CorePutObjectAsync(bucketName, objectName, file, false, cancellationToken).ConfigureAwait(false);
