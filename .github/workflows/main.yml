@@ -37,20 +37,16 @@ jobs:
       name: main
     steps:
       - uses: actions/checkout@v2
-      
-      - name: Package | Release
-        id: release
-        uses: tenhaus/get-release-or-tag@v2
           
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.0.x
       
-      - name: Package | Publish
-        uses: drusellers/publish-nuget@v3
-        with:
-          project-file-path: ./Minio.Client/Minio.Client.csproj
-          version: ${{ steps.release.outputs.tag }}
-          nuget-key: ${{ secrets.NUGET_ACCESS_TOKEN }}
-          include-symbols: true
+      - name: pack
+        if: success()
+#         run: dotnet pack ./Minio.Client.Test/Minio.Client.Test.csproj -c Release -o out --include-symbols --include-source
+  
+      - name: publush
+        if: success()
+        run: dotnet nuget push ./out/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_ACCESS_TOKEN}} --skip-duplicate
