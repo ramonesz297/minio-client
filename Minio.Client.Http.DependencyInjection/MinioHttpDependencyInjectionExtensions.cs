@@ -23,21 +23,21 @@ namespace Minio.Client.Http.DependencyInjection
         public static IHttpClientBuilder AddMinioHttpClient(this IServiceCollection services, Uri minioHost)
         {
             services.TryAddTransient<AuthenticationDelegatingHandler>();
-            return services.AddHttpClient<MinioHttpClient>(o =>
-            {
-                o.BaseAddress = minioHost;
+            return services.AddHttpClient<IMinioHttpClient, MinioHttpClient>(o =>
+             {
+                 o.BaseAddress = minioHost;
 
-            }).AddHttpMessageHandler<AuthenticationDelegatingHandler>();
+             }).AddHttpMessageHandler<AuthenticationDelegatingHandler>();
         }
 
         public static IHttpClientBuilder AddMinioHttpClient(this IServiceCollection services, string name, Uri minioHost)
         {
             services.TryAddTransient<AuthenticationDelegatingHandler>();
 
-            return services.AddHttpClient<MinioHttpClient>(name, o =>
-            {
-                o.BaseAddress = minioHost;
-            }).AddHttpMessageHandler<AuthenticationDelegatingHandler>();
+            return services.AddHttpClient<IMinioHttpClient, MinioHttpClient>(name, o =>
+             {
+                 o.BaseAddress = minioHost;
+             }).AddHttpMessageHandler<AuthenticationDelegatingHandler>();
         }
     }
 }
