@@ -45,7 +45,7 @@ jobs:
       
       - name: pack
         if: success()
-#         run: dotnet pack ./Minio.Client.Test/Minio.Client.Test.csproj -c Release -o out --include-symbols --include-source
+#       run: dotnet pack ./Minio.Client.Test/Minio.Client.Test.csproj -c Release -o out --include-symbols --include-source
   
       - name: publush
         if: success()
