@@ -34,26 +34,33 @@ namespace Minio.Client.Http
 
         public async Task<bool> BucketExistAsync(string bucketName, CancellationToken cancellationToken = default)
         {
-            using var result = await _httpClient.HeadAsync(bucketName, cancellationToken).ConfigureAwait(false);
+            using var result = await _httpClient.HeadAsync(new ObjectIdentifire(bucketName).ToString(), cancellationToken).ConfigureAwait(false);
             return result.IsSuccessStatusCode;
         }
 
         public async Task RemoveBucketAsync(string bucketName, CancellationToken cancellationToken = default)
         {
-            using var result = await _httpClient.DeleteAsync(bucketName, cancellationToken).ConfigureAwait(false);
+            using var result = await _httpClient.DeleteAsync(new ObjectIdentifire(bucketName).ToString(), cancellationToken).ConfigureAwait(false);
             result.EnsureSuccessStatusCode();
         }
 
         public async Task CreateBucketAsync(string bucketName, CancellationToken cancellationToken = default)
         {
-            using var response = await _httpClient.PutWithEmptyBodyAsync(bucketName, cancellationToken).ConfigureAwait(false);
+            using var response = await _httpClient.PutWithEmptyBodyAsync(new ObjectIdentifire(bucketName).ToString(), cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<bool> ObjectExistAsync(string bucketName, string objectName, CancellationToken cancellationToken = default)
+        {
+
+            using var response = await _httpClient.HeadAsync($"{new ObjectIdentifire(bucketName, objectName)}", cancellationToken).ConfigureAwait(false);
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<HttpResponseMessage> GetObjectAsync(string bucketName, string objectName, CancellationToken cancellationToken = default)
         {
             var response = await _httpClient.GetAsync(
-                requestUri: $"{bucketName}/{objectName}",
+                requestUri: $"{new ObjectIdentifire(bucketName, objectName)}",
                 completionOption: HttpCompletionOption.ResponseHeadersRead,
                 cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
@@ -64,13 +71,13 @@ namespace Minio.Client.Http
 
         public async Task RemoveObjectAsync(string bucketName, string objectName, CancellationToken cancellationToken = default)
         {
-            using var response = await _httpClient.DeleteAsync($"{bucketName}/{objectName}", cancellationToken).ConfigureAwait(false);
+            using var response = await _httpClient.DeleteAsync($"{new ObjectIdentifire(bucketName, objectName)}", cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
         }
 
         public async Task<ObjectInformation> GetObjectInfoAsync(string bucketName, string objectName, CancellationToken cancellationToken = default)
         {
-            using var response = await _httpClient.HeadAsync($"{bucketName}/{objectName}", cancellationToken).ConfigureAwait(false);
+            using var response = await _httpClient.HeadAsync($"{new ObjectIdentifire(bucketName, objectName)}", cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
             var metadata = response.Headers.Where(x => x.Key.StartsWith("x-amz-meta-", StringComparison.OrdinalIgnoreCase))
@@ -87,22 +94,22 @@ namespace Minio.Client.Http
 
         public HttpRequestMessage PresignedGetObjectRequest(string bucketName, string objectName, int expires)
         {
-            return new HttpRequestMessage(HttpMethod.Get, new Uri(_httpClient.BaseAddress, $"{bucketName}/{objectName}")).PresignUrl(expires, _options.Value);
+            return new HttpRequestMessage(HttpMethod.Get, new Uri(_httpClient.BaseAddress, $"{new ObjectIdentifire(bucketName, objectName)}")).PresignUrl(expires, _options.Value);
         }
 
         public Uri PresignedGetObjectUrl(string bucketName, string objectName, int expires)
         {
-            return new Uri(_httpClient.BaseAddress, $"{bucketName}/{objectName}").PresignUrl(HttpMethod.Get, expires, _options.Value);
+            return new Uri(_httpClient.BaseAddress, $"{new ObjectIdentifire(bucketName, objectName)}").PresignUrl(HttpMethod.Get, expires, _options.Value);
         }
 
         public HttpRequestMessage PresignedPutObjectRequest(string bucketName, string objectName, int expires)
         {
-            return new HttpRequestMessage(HttpMethod.Put, new Uri(_httpClient.BaseAddress, $"{bucketName}/{objectName}")).PresignUrl(expires, _options.Value);
+            return new HttpRequestMessage(HttpMethod.Put, new Uri(_httpClient.BaseAddress, $"{new ObjectIdentifire(bucketName, objectName)}")).PresignUrl(expires, _options.Value);
         }
 
         public Uri PresignedPutObjectUrl(string bucketName, string objectName, int expires)
         {
-            return new Uri(_httpClient.BaseAddress, $"{bucketName}/{objectName}").PresignUrl(HttpMethod.Put, expires, _options.Value);
+            return new Uri(_httpClient.BaseAddress, $"{new ObjectIdentifire(bucketName, objectName)}").PresignUrl(HttpMethod.Put, expires, _options.Value);
         }
 
         public async Task<ObjectInformation> CorePutObjectAsync(string bucketName, string objectName, MinioFileRequest file, CancellationToken cancellationToken = default)
@@ -116,7 +123,7 @@ namespace Minio.Client.Http
 
             content.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
 
-            using var response = await _httpClient.PutAsync($"{bucketName}/{objectName}{file}", content, cancellationToken).ConfigureAwait(false);
+            using var response = await _httpClient.PutAsync($"{new ObjectIdentifire(bucketName, objectName)}{file}", content, cancellationToken).ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
@@ -170,7 +177,7 @@ namespace Minio.Client.Http
 
         public async Task RemoveUploadAsync(string bucketName, string objectName, string uploadId, CancellationToken cancellationToken = default)
         {
-            using var response = await _httpClient.DeleteAsync($"{bucketName}/{objectName}?uploadId={uploadId}", cancellationToken).ConfigureAwait(false);
+            using var response = await _httpClient.DeleteAsync($"{new ObjectIdentifire(bucketName, objectName)}?uploadId={uploadId}", cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
         }
 
@@ -189,7 +196,7 @@ namespace Minio.Client.Http
 
             var content = new StringContent(bodyString, System.Text.Encoding.UTF8, "application/xml");
 
-            using var response = await _httpClient.PostAsync($"{bucketName}/{objectName}?uploadId={request.UploadId}", content, cancellationToken)
+            using var response = await _httpClient.PostAsync($"{new ObjectIdentifire(bucketName, objectName)}?uploadId={request.UploadId}", content, cancellationToken)
                 .ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
             return response.Headers.ETag.ToString().Trim('"');
@@ -197,7 +204,7 @@ namespace Minio.Client.Http
 
         public virtual async Task<string> InitializeMulipartUploadAsync(string bucketName, string objectName, CancellationToken cancellationToken = default)
         {
-            using var response = await _httpClient.PostWithEmptyBodyAsync($"{bucketName}/{objectName}?uploads=", cancellationToken).ConfigureAwait(false);
+            using var response = await _httpClient.PostWithEmptyBodyAsync($"{new ObjectIdentifire(bucketName, objectName)}?uploads=", cancellationToken).ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
@@ -242,8 +249,10 @@ namespace Minio.Client.Http
 
         public virtual async Task<ObjectInformation> CoreCopyAsync(MultipartCopyRequest copyRequest, CancellationToken cancellationToken = default)
         {
+            var destination = new ObjectIdentifire(copyRequest.Request.DestinationBucketName, copyRequest.Request.DestinationObjectName);
+
             var request = new HttpRequestMessage(HttpMethod.Put,
-                $"{copyRequest.Request.DestinationBucketName}/{copyRequest.Request.DestinationObjectName}{copyRequest}")
+                $"{destination}{copyRequest}")
             {
                 Content = new StringContent("", System.Text.Encoding.UTF8),
             };

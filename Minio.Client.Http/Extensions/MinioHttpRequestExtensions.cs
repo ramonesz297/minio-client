@@ -199,7 +199,7 @@ namespace Minio.Client.Http.Extensions
             var sb = new StringBuilder();
 
             sb.Append(request.Method).Append('\n');
-            sb.Append(request.RequestUri.LocalPath);
+            sb.Append('/').Append(request.RequestUri.GetComponents(UriComponents.Path, UriFormat.UriEscaped));
             sb.Append('\n');
             sb.Append(request.GetQuery().ToString());
             sb.Append('\n');
@@ -273,6 +273,7 @@ namespace Minio.Client.Http.Extensions
         public static async Task AddAccessToken(this HttpRequestMessage request, MinioOptions options, CancellationToken cancellationToken = default)
         {
             var now = DateTime.UtcNow;
+            //var now = new DateTime(2022, 01, 14, 17, 42, 0, DateTimeKind.Utc);
 
             await request.AddMD5HeaderAsync(options, cancellationToken).ConfigureAwait(false);
             await request.AddSHA256HeaderAsync(cancellationToken).ConfigureAwait(false);

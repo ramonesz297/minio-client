@@ -35,10 +35,13 @@ namespace Minio.Client.Http.Test.Infrastructure
             Assert.False(result);
         }
 
-        [Fact]
-        public async Task Should_create_and_delete_Bucket()
+        [Theory]
+        [InlineData("asdv")]
+        [InlineData("12313")]
+        [InlineData("a.a")]
+        public async Task Should_create_and_delete_Bucket(string sufix)
         {
-            var backetName = Guid.NewGuid().ToString();
+            var backetName = Guid.NewGuid().ToString() + sufix;
 
             await Fxitire.Client.CreateBucketAsync(backetName);
 
@@ -85,11 +88,15 @@ namespace Minio.Client.Http.Test.Infrastructure
         }
 
 
-        [Fact]
-        public async Task Should_return_presigned_valid_put_url()
+        [Theory]
+        [InlineData("test-object-name.txt")]
+        [InlineData("test/test-object-name.txt")]
+        [InlineData("test /test object name.txt")]
+        [InlineData("test/test object name.txt")]
+        public async Task Should_return_presigned_valid_put_url(string filename)
         {
             long length = 0;
-            using var result = Fxitire.Client.PresignedPutObjectRequest(Fxitire.BucketName, "test-object-name.txt", 777);
+            using var result = Fxitire.Client.PresignedPutObjectRequest(Fxitire.BucketName, filename, 777);
 
             using var c = new HttpClient();
             using var ms = new MemoryStream();
@@ -104,16 +111,19 @@ namespace Minio.Client.Http.Test.Infrastructure
             length = ms.Length;
             var data = await c.PutAsync(result.RequestUri, content);
 
-            var info = await Fxitire.Client.GetObjectInfoAsync(Fxitire.BucketName, "test-object-name.txt");
+            var info = await Fxitire.Client.GetObjectInfoAsync(Fxitire.BucketName, filename);
 
             Assert.Equal(info.Size, length);
 
         }
 
-        [Fact]
-        public async Task Should_upload_object()
+        [Theory]
+        [InlineData("some.txt")]
+        [InlineData("some .txt")]
+        [InlineData("some()$%.txt")]
+        [InlineData("s ?:%/ome()$%.txt")]
+        public async Task Should_upload_object(string fileName)
         {
-
             using var ms = new MemoryStream();
 
             using (var sw = new StreamWriter(ms, System.Text.Encoding.UTF8, 1024, true))
@@ -124,11 +134,9 @@ namespace Minio.Client.Http.Test.Infrastructure
 
             ms.Seek(0, SeekOrigin.Begin);
 
-            string name = Guid.NewGuid().ToString() + ".txt";
+            var result = await Fxitire.Client.CorePutObjectAsync(Fxitire.BucketName, fileName, new MinioFileRequest(ms));
 
-            var result = await Fxitire.Client.CorePutObjectAsync(Fxitire.BucketName, name, new MinioFileRequest(ms));
-
-            var info = await Fxitire.Client.GetObjectInfoAsync(Fxitire.BucketName, name);
+            var info = await Fxitire.Client.GetObjectInfoAsync(Fxitire.BucketName, fileName);
             Assert.NotEqual(0, info.Size);
             Assert.NotNull(info.ETag);
             Assert.Equal(info.ETag, result.ETag);
