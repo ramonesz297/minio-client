@@ -22,6 +22,14 @@ namespace Minio.Client.Http.Test
         }
 
         [Fact]
+        public void Should_override_parameter()
+        {
+            QueryStringCollection a = new QueryStringCollection("?a=1&b=2", false);
+            a.Add("a", "123");
+            Assert.Equal("a=123&b=2", a.ToString());
+        }
+
+        [Fact]
         public void Should_be_sorted()
         {
             QueryStringCollection a = new QueryStringCollection(false);

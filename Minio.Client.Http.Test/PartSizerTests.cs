@@ -46,6 +46,4 @@ namespace Minio.Client.Http.Test
             Assert.Equal(6L * 1024 * 1024 - 1, parts[1].To);
         }
     }
-
-
 }

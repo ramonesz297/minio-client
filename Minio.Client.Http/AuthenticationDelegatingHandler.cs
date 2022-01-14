@@ -17,7 +17,7 @@ namespace Minio.Client.Http
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            await request.AddAccessToken(_options.Value).ConfigureAwait(false);
+            await request.AddAccessToken(_options.Value, cancellationToken).ConfigureAwait(false);
 
             return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
         }

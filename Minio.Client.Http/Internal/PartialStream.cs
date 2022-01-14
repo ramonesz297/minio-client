@@ -93,7 +93,7 @@ namespace Minio.Client.Http.Internal
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
 

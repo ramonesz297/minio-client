@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Minio.Client.Http.Extensions
@@ -48,8 +49,20 @@ namespace Minio.Client.Http.Extensions
         {
             return string.Equals(request.RequestUri.Scheme, "https", StringComparison.OrdinalIgnoreCase);
         }
+        private static async Task<Stream> ReadAsStreamAsync(this HttpRequestMessage request, CancellationToken cancellationToken = default)
+        {
+            return request.Content switch
+            {
+                MinioStreamContent content => content.UnderlyingStream,
+#if NET5_0_OR_GREATER
+                _ => await request.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false)
+#else
+                _ => await request.Content.ReadAsStreamAsync().ConfigureAwait(false)
+#endif
+            };
+        }
 
-        public static async Task<HttpRequestMessage> AddMD5HeaderAsync(this HttpRequestMessage request, MinioOptions options)
+        public static async Task<HttpRequestMessage> AddMD5HeaderAsync(this HttpRequestMessage request, MinioOptions options, CancellationToken cancellationToken = default)
         {
             if (request.Method != HttpMethod.Post && request.Method != HttpMethod.Put)
             {
@@ -61,14 +74,10 @@ namespace Minio.Client.Http.Extensions
                 return request;
             }
 
-            Stream requestBody = request.Content switch
-            {
-                MinioStreamContent content => content.UnderlingStream,
-                _ => await request.Content.ReadAsStreamAsync().ConfigureAwait(false)
-            };
+            Stream requestBody = await request.ReadAsStreamAsync(cancellationToken);
 
 #if NET5_0_OR_GREATER
-            var hash = await requestBody.GetMD5Async().ConfigureAwait(false);
+            var hash = await requestBody.GetMD5Async(cancellationToken).ConfigureAwait(false);
 #else
 
             var hash = requestBody.GetMD5();
@@ -80,7 +89,8 @@ namespace Minio.Client.Http.Extensions
             return request;
         }
 
-        public static async Task<HttpRequestMessage> AddSHA256HeaderAsync(this HttpRequestMessage request)
+
+        public static async Task<HttpRequestMessage> AddSHA256HeaderAsync(this HttpRequestMessage request, CancellationToken cancellationToken = default)
         {
             if (request.IsSecure())
             {
@@ -90,14 +100,10 @@ namespace Minio.Client.Http.Extensions
 
             if ((request.Method == HttpMethod.Post || request.Method == HttpMethod.Put) && !request.IsEmptyRequest())
             {
-                Stream requestBody = request.Content switch
-                {
-                    MinioStreamContent content => content.UnderlingStream,
-                    _ => await request.Content.ReadAsStreamAsync().ConfigureAwait(false)
-                };
+                Stream requestBody = await request.ReadAsStreamAsync(cancellationToken);
 
 #if NET5_0_OR_GREATER
-                var hash = await requestBody.GetSHA256Async().ConfigureAwait(false);
+                var hash = await requestBody.GetSHA256Async(cancellationToken).ConfigureAwait(false);
 #else
                 var hash = requestBody.GetSHA256();
 #endif
@@ -264,12 +270,12 @@ namespace Minio.Client.Http.Extensions
             return request;
         }
 
-        public static async Task AddAccessToken(this HttpRequestMessage request, MinioOptions options)
+        public static async Task AddAccessToken(this HttpRequestMessage request, MinioOptions options, CancellationToken cancellationToken = default)
         {
             var now = DateTime.UtcNow;
 
-            await request.AddMD5HeaderAsync(options).ConfigureAwait(false);
-            await request.AddSHA256HeaderAsync().ConfigureAwait(false);
+            await request.AddMD5HeaderAsync(options, cancellationToken).ConfigureAwait(false);
+            await request.AddSHA256HeaderAsync(cancellationToken).ConfigureAwait(false);
             request.AddHostHeader();
             request.AddDateHeader(now);
             request.AddSessionTokenHeader(options.SessionToken);
