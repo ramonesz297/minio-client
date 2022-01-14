@@ -16,7 +16,7 @@ namespace Minio.Client.Http.Test.Infrastructure
 
         public string BigFileName { get; } = Guid.NewGuid().ToString() + ".txt";
 
-        public MinioHttpClient Client => sp.GetRequiredService<MinioHttpClient>();
+        public IMinioHttpClient Client => sp.GetRequiredService<IMinioHttpClient>();
 
         public Guid FileContent { get; } = Guid.NewGuid();
 

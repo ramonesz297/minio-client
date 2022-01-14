@@ -14,7 +14,7 @@ using System.Xml.Linq;
 
 namespace Minio.Client.Http
 {
-    public class MinioHttpClient
+    public class MinioHttpClient : IMinioHttpClient
     {
         private readonly HttpClient _httpClient;
         private readonly IOptionsSnapshot<MinioOptions> _options;
@@ -132,7 +132,7 @@ namespace Minio.Client.Http
             return await PutObjectAsync(bucketName, objectName, file, false, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<ObjectInformation> PutObjectAsync(string bucketName, string objectName, MinioFileRequest file, bool leaveOpen, CancellationToken cancellationToken = default)
+        public virtual async Task<ObjectInformation> PutObjectAsync(string bucketName, string objectName, MinioFileRequest file, bool leaveOpen, CancellationToken cancellationToken = default)
         {
             if (file.MaxSingleSizeUpload.GetValueOrDefault(_options.Value.MaxSingleSizeUpload) < file.Stream.Length)
             {
@@ -174,7 +174,7 @@ namespace Minio.Client.Http
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task<string> CompleteMulipartUploadAsync(string bucketName, string objectName, CompleteMultipartUploadRequest request, CancellationToken cancellationToken = default)
+        public virtual async Task<string> CompleteMulipartUploadAsync(string bucketName, string objectName, CompleteMultipartUploadRequest request, CancellationToken cancellationToken = default)
         {
             List<XElement> parts = new List<XElement>();
 
@@ -195,7 +195,7 @@ namespace Minio.Client.Http
             return response.Headers.ETag.ToString().Trim('"');
         }
 
-        public async Task<string> InitializeMulipartUploadAsync(string bucketName, string objectName, CancellationToken cancellationToken = default)
+        public virtual async Task<string> InitializeMulipartUploadAsync(string bucketName, string objectName, CancellationToken cancellationToken = default)
         {
             using var response = await _httpClient.PostWithEmptyBodyAsync($"{bucketName}/{objectName}?uploads=", cancellationToken).ConfigureAwait(false);
 
@@ -206,7 +206,7 @@ namespace Minio.Client.Http
             return result.UploadId;
         }
 
-        public async Task<ObjectInformation> CopyAsync(CopyRequest copyRequest, CancellationToken cancellationToken = default)
+        public virtual async Task<ObjectInformation> CopyAsync(CopyRequest copyRequest, CancellationToken cancellationToken = default)
         {
             var source = await GetObjectInfoAsync(copyRequest.SourceBucketName, copyRequest.SourceObjectName, cancellationToken).ConfigureAwait(false);
 
@@ -240,7 +240,7 @@ namespace Minio.Client.Http
             }
         }
 
-        public async Task<ObjectInformation> CoreCopyAsync(MultipartCopyRequest copyRequest, CancellationToken cancellationToken = default)
+        public virtual async Task<ObjectInformation> CoreCopyAsync(MultipartCopyRequest copyRequest, CancellationToken cancellationToken = default)
         {
             var request = new HttpRequestMessage(HttpMethod.Put,
                 $"{copyRequest.Request.DestinationBucketName}/{copyRequest.Request.DestinationObjectName}{copyRequest}")
