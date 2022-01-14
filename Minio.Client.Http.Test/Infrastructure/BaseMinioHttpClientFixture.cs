@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Minio.Client.Http.DependencyInjection;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
-
 namespace Minio.Client.Http.Test.Infrastructure
 {
     public abstract class BaseMinioHttpClientFixture : IAsyncLifetime
@@ -24,28 +24,15 @@ namespace Minio.Client.Http.Test.Infrastructure
 
         public BaseMinioHttpClientFixture()
         {
-            var sc = new ServiceCollection();
+            IServiceCollection sc = new ServiceCollection();
 
-            sc.AddOptions().Configure<MinioOptions>((o) =>
+            var url = IsHttps ? new Uri("https://play.min.io") : new Uri("http://play.min.io");
+
+            sc.AddMinioHttpClient(url, o =>
             {
                 o.AccessKey = "Q3AM3UQ867SPQQA43P2F";
                 o.SecretKey = "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG";
             });
-            sc.AddTransient<AuthenticationDelegatingHandler>();
-
-            sc.AddHttpClient<MinioHttpClient>((o) =>
-            {
-                if (IsHttps)
-                {
-                    o.BaseAddress = new Uri("https://play.min.io");
-                }
-                else
-                {
-                    o.BaseAddress = new Uri("http://play.min.io");
-                }
-
-            }).AddHttpMessageHandler<AuthenticationDelegatingHandler>();
-
 
             sp = sc.BuildServiceProvider();
         }

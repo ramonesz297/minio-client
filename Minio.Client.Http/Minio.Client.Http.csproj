@@ -6,6 +6,8 @@
 		<Nullable>disable</Nullable>
 		<PackageId>Minio.Client.Http</PackageId>
 		<AnalysisLevel>latest</AnalysisLevel>
+		<PackageDescription>Http client for Minio</PackageDescription>
+		<PackageTags>Minio;HttpClient</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">

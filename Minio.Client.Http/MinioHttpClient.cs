@@ -17,9 +17,9 @@ namespace Minio.Client.Http
     public class MinioHttpClient
     {
         private readonly HttpClient _httpClient;
-        private readonly IOptions<MinioOptions> _options;
+        private readonly IOptionsSnapshot<MinioOptions> _options;
 
-        public MinioHttpClient(HttpClient httpClient, IOptions<MinioOptions> options)
+        public MinioHttpClient(HttpClient httpClient, IOptionsSnapshot<MinioOptions> options)
         {
             _httpClient = httpClient;
             _options = options;
