@@ -20,7 +20,7 @@ jobs:
       - name: tests
         run: dotnet test .\Minio.Client.Test\Minio.Client.Test.csproj -c Release --logger trx --results-directory out-tests
       
-      - name: Test Report
+      - name: report
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
@@ -33,6 +33,6 @@ jobs:
         if: success()
         run: dotnet pack .\Minio.Client.Test\Minio.Client.csproj -c Release -o out --include-symbols --include-source
   
-      - name: publush
+      - name: publish
         if: success()
         run: dotnet nuget push .\out\*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_ACCESS_TOKEN}} --skip-duplicate
