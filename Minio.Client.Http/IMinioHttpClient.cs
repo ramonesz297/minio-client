@@ -19,6 +19,7 @@ namespace Minio.Client.Http
         Task<HttpResponseMessage> GetObjectAsync(string bucketName, string objectName, CancellationToken cancellationToken = default);
         Task<ObjectInformation> GetObjectInfoAsync(string bucketName, string objectName, CancellationToken cancellationToken = default);
         Task<string> InitializeMulipartUploadAsync(string bucketName, string objectName, CancellationToken cancellationToken = default);
+        Task<bool> ObjectExistAsync(string bucketName, string objectName, CancellationToken cancellationToken = default);
         HttpRequestMessage PresignedGetObjectRequest(string bucketName, string objectName, int expires);
         Uri PresignedGetObjectUrl(string bucketName, string objectName, int expires);
         HttpRequestMessage PresignedPutObjectRequest(string bucketName, string objectName, int expires);
