@@ -29,10 +29,18 @@ jobs:
             reporter: dotnet-trx
             fail-on-error: 'true'
       
-      - name: pack
+      - name: pack-http-client
         if: success()
         run: dotnet pack .\Minio.Client.Http\Minio.Client.Http.csproj -c Release -o out --include-symbols --include-source
   
-      - name: publish
+      - name: publish-http-client
         if: success()
         run: dotnet nuget push .\out\*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_ACCESS_TOKEN}} --skip-duplicate
+
+      - name: pack-http-client-extensions
+        if: success()
+        run: dotnet pack .\Minio.Client.Http.DependencyInjection\Minio.Client.Http.DependencyInjection.csproj -c Release -o out-extensions --include-symbols --include-source
+  
+      - name: publish-http-client-extensions
+        if: success()
+        run: dotnet nuget push .\out-extensions\*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_ACCESS_TOKEN}} --skip-duplicate

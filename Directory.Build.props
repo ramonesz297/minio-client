@@ -6,7 +6,9 @@
         <AssemblyVersion>1.0.1</AssemblyVersion>
         <FileVersion>1.0.1</FileVersion>
         <Version>1.0.1</Version>
+        <RepositoryType>git</RepositoryType>
         <PackageVersion>1.0.1</PackageVersion>
-        <PackageDescription>Http client for Minio</PackageDescription>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <IncludeSymbols>true</IncludeSymbols>
     </PropertyGroup>
 </Project>

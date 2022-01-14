@@ -23,6 +23,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Minio.Client.Http.DependencyInjection\Minio.Client.Http.DependencyInjection.csproj" />
 	  <ProjectReference Include="..\Minio.Client.Http\Minio.Client.Http.csproj" />
 	</ItemGroup>
 
