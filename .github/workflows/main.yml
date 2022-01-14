@@ -52,6 +52,5 @@ jobs:
         with:
           project-file-path: ./Minio.Client/Minio.Client.csproj
           version: ${{ steps.release.outputs.tag }}
-          tag-format: '*'
           nuget-key: ${{ secrets.NUGET_ACCESS_TOKEN }}
           include-symbols: true
