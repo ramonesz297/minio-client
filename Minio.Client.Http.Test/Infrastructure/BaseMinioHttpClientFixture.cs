@@ -44,7 +44,7 @@ namespace Minio.Client.Http.Test.Infrastructure
             using var ms = new MemoryStream(FileContent.ToByteArray());
             ms.Seek(0, SeekOrigin.Begin);
 
-            var result = await Client.PutObjectAsync(BucketName, FileName, new MinioFileRequest(ms));
+            var result = await Client.PutObjectAsync(BucketName, FileName, new MinioFileRequest(ms), true);
 
             using var ms2 = new MemoryStream();
             var guid = Guid.NewGuid().ToByteArray();
@@ -55,6 +55,23 @@ namespace Minio.Client.Http.Test.Infrastructure
             }
             ms2.Seek(0, SeekOrigin.Begin);
             result = await Client.PutObjectAsync(BucketName, BigFileName, new MinioFileRequest(ms2));
+
+
+            ms.Seek(0, SeekOrigin.Begin);
+
+            await Client.PutObjectAsync(BucketName, $"data/1 абс/{FileName}", new MinioFileRequest(ms), true);
+
+            ms.Seek(0, SeekOrigin.Begin);
+
+            await Client.PutObjectAsync(BucketName, $"data/2 абс/{FileName}", new MinioFileRequest(ms), true);
+
+            ms.Seek(0, SeekOrigin.Begin);
+
+            await Client.PutObjectAsync(BucketName, $"data/3 абс/{FileName}", new MinioFileRequest(ms), true);
+
+            ms.Seek(0, SeekOrigin.Begin);
+
+            await Client.PutObjectAsync(BucketName, $"data/4 абс/{FileName}", new MinioFileRequest(ms), true);
         }
 
         public async Task DisposeAsync()

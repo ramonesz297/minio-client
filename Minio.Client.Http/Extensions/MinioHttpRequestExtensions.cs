@@ -161,7 +161,7 @@ namespace Minio.Client.Http.Extensions
 
         internal static QueryStringCollection GetQuery(this Uri request, bool escape = true)
         {
-            return new QueryStringCollection(request.Query, escape);
+            return new QueryStringCollection(request.GetComponents(UriComponents.Query, UriFormat.Unescaped), escape);
         }
 
         private static string GetScope(string region, DateTime signingDate)

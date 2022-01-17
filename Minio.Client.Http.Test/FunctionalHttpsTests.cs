@@ -6,11 +6,11 @@ namespace Minio.Client.Http.Test
 
     public class FunctionalHttpsTests : BaseFunctionalTest<MinioHttpsClientFixture>, IClassFixture<MinioHttpsClientFixture>
     {
-        protected override MinioHttpsClientFixture Fxitire { get; }
+        protected override MinioHttpsClientFixture Fixitire { get; }
 
         public FunctionalHttpsTests(MinioHttpsClientFixture fxitire)
         {
-            Fxitire = fxitire;
+            Fixitire = fxitire;
         }
     }
 
