@@ -56,7 +56,7 @@ namespace Minio.Client.Http.Internal
 
         private string PrepareValue(string value)
         {
-            return _encodeValues ? WebUtility.UrlEncode(value) : value;
+            return _encodeValues ? Uri.EscapeDataString(value) : value;
         }
 
         public void Add(string key, string value)

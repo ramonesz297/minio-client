@@ -53,6 +53,7 @@ namespace Minio.Client.Http.Benchmark
 
             await _client.PutObjectAsync(BucketName, FileName, new MinioFileRequest(ms));
 
+
         }
 
         [GlobalCleanup]

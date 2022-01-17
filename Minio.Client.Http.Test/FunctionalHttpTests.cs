@@ -8,10 +8,10 @@ namespace Minio.Client.Http.Test
 
         public FunctionalHttpTests(MinioHttpClientFixture fxitire)
         {
-            Fxitire = fxitire;
+            Fixitire = fxitire;
         }
 
-        protected override MinioHttpClientFixture Fxitire { get; }
+        protected override MinioHttpClientFixture Fixitire { get; }
     }
 
 

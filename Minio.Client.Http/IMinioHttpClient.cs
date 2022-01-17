@@ -1,6 +1,8 @@
 ﻿using Minio.Client.Http.Model;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,6 +20,7 @@ namespace Minio.Client.Http
         Task<ListAllMyBucketsResult> GetBucketsAsync(CancellationToken cancellationToken = default);
         Task<HttpResponseMessage> GetObjectAsync(string bucketName, string objectName, CancellationToken cancellationToken = default);
         Task<ObjectInformation> GetObjectInfoAsync(string bucketName, string objectName, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<ObjectInformation> GetObjectsAsync(GetObjectsRequests requests, CancellationToken cancellationToken = default);
         Task<string> InitializeMulipartUploadAsync(string bucketName, string objectName, CancellationToken cancellationToken = default);
         Task<bool> ObjectExistAsync(string bucketName, string objectName, CancellationToken cancellationToken = default);
         HttpRequestMessage PresignedGetObjectRequest(string bucketName, string objectName, int expires);

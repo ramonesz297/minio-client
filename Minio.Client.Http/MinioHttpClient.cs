@@ -8,6 +8,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -55,6 +57,33 @@ namespace Minio.Client.Http
 
             using var response = await _httpClient.HeadAsync($"{new ObjectIdentifire(bucketName, objectName)}", cancellationToken).ConfigureAwait(false);
             return response.IsSuccessStatusCode;
+        }
+
+
+        public async IAsyncEnumerable<ObjectInformation> GetObjectsAsync(GetObjectsRequests requests, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            ListBucketResult listBucketResult = null;
+
+            do
+            {
+                using var result = await _httpClient.GetAsync(requests.ToString(), cancellationToken).ConfigureAwait(false);
+
+                result.EnsureSuccessStatusCode();
+
+                listBucketResult = await result.Content.ReadAsAsync<ListBucketResult>().ConfigureAwait(false);
+
+                foreach (var item in listBucketResult.Contents)
+                {
+                    yield return new ObjectInformation(WebUtility.UrlDecode(item.Key), item.Size, item.LastModified, item.ETag.Trim('"'));
+                }
+
+                if (listBucketResult.IsTruncated)
+                {
+                    requests = new GetObjectsRequests(requests.Bucket, requests.Recursive, requests.Prefix, requests.MaxKeys, listBucketResult.NextMarker);
+                }
+
+            } while (listBucketResult.IsTruncated);
+
         }
 
         public async Task<HttpResponseMessage> GetObjectAsync(string bucketName, string objectName, CancellationToken cancellationToken = default)
@@ -171,7 +200,7 @@ namespace Minio.Client.Http
             }
             else
             {
-                return await CorePutObjectAsync(bucketName, objectName, file, cancellationToken).ConfigureAwait(false);
+                return await CorePutObjectAsync(bucketName, objectName, file, leaveOpen, cancellationToken).ConfigureAwait(false);
             }
         }
 

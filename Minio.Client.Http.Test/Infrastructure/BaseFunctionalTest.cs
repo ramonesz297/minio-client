@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
@@ -8,12 +9,12 @@ namespace Minio.Client.Http.Test.Infrastructure
 {
     public abstract class BaseFunctionalTest<T> where T : BaseMinioHttpClientFixture
     {
-        protected abstract T Fxitire { get; }
+        protected abstract T Fixitire { get; }
 
         [Fact]
         public async Task GetBuckets()
         {
-            var list = await Fxitire.Client.GetBucketsAsync();
+            var list = await Fixitire.Client.GetBucketsAsync();
 
             Assert.NotNull(list);
         }
@@ -21,7 +22,7 @@ namespace Minio.Client.Http.Test.Infrastructure
         [Fact]
         public async Task Should_BucketExists()
         {
-            var result = await Fxitire.Client.BucketExistAsync(Fxitire.BucketName);
+            var result = await Fixitire.Client.BucketExistAsync(Fixitire.BucketName);
 
             Assert.True(result);
         }
@@ -30,7 +31,7 @@ namespace Minio.Client.Http.Test.Infrastructure
         [Fact]
         public async Task Should_Bucket_do_not_Exist()
         {
-            var result = await Fxitire.Client.BucketExistAsync(Guid.NewGuid().ToString());
+            var result = await Fixitire.Client.BucketExistAsync(Guid.NewGuid().ToString());
 
             Assert.False(result);
         }
@@ -43,31 +44,31 @@ namespace Minio.Client.Http.Test.Infrastructure
         {
             var backetName = Guid.NewGuid().ToString() + sufix;
 
-            await Fxitire.Client.CreateBucketAsync(backetName);
+            await Fixitire.Client.CreateBucketAsync(backetName);
 
-            Assert.True(await Fxitire.Client.BucketExistAsync(backetName));
+            Assert.True(await Fixitire.Client.BucketExistAsync(backetName));
 
-            await Fxitire.Client.RemoveBucketAsync(backetName);
+            await Fixitire.Client.RemoveBucketAsync(backetName);
 
-            Assert.False(await Fxitire.Client.BucketExistAsync(backetName));
+            Assert.False(await Fixitire.Client.BucketExistAsync(backetName));
 
         }
 
         [Fact]
         public async Task Should_read_object()
         {
-            using var result = await Fxitire.Client.GetObjectAsync(Fxitire.BucketName, Fxitire.FileName);
+            using var result = await Fixitire.Client.GetObjectAsync(Fixitire.BucketName, Fixitire.FileName);
 
             var b = new Guid(await result.Content.ReadAsByteArrayAsync());
 
-            Assert.Equal(Fxitire.FileContent, b);
+            Assert.Equal(Fixitire.FileContent, b);
         }
 
 
         [Fact]
         public async Task Should_return_presigned_get_url()
         {
-            using var result = Fxitire.Client.PresignedGetObjectRequest(Fxitire.BucketName, Fxitire.FileName, 777);
+            using var result = Fixitire.Client.PresignedGetObjectRequest(Fixitire.BucketName, Fixitire.FileName, 777);
 
             using var c = new HttpClient();
 
@@ -75,16 +76,16 @@ namespace Minio.Client.Http.Test.Infrastructure
 
             var b = new Guid(await response.Content.ReadAsByteArrayAsync());
 
-            Assert.Equal(Fxitire.FileContent, b);
+            Assert.Equal(Fixitire.FileContent, b);
         }
 
 
         [Fact]
         public async Task Should_return_object_info()
         {
-            var result = await Fxitire.Client.GetObjectInfoAsync(Fxitire.BucketName, Fxitire.FileName);
-            Assert.Equal(result.ObjectName, Fxitire.FileName);
-            Assert.Equal(result.Size, Fxitire.FileContent.ToByteArray().Length);
+            var result = await Fixitire.Client.GetObjectInfoAsync(Fixitire.BucketName, Fixitire.FileName);
+            Assert.Equal(result.ObjectName, Fixitire.FileName);
+            Assert.Equal(result.Size, Fixitire.FileContent.ToByteArray().Length);
         }
 
 
@@ -96,7 +97,7 @@ namespace Minio.Client.Http.Test.Infrastructure
         public async Task Should_return_presigned_valid_put_url(string filename)
         {
             long length = 0;
-            using var result = Fxitire.Client.PresignedPutObjectRequest(Fxitire.BucketName, filename, 777);
+            using var result = Fixitire.Client.PresignedPutObjectRequest(Fixitire.BucketName, filename, 777);
 
             using var c = new HttpClient();
             using var ms = new MemoryStream();
@@ -111,7 +112,7 @@ namespace Minio.Client.Http.Test.Infrastructure
             length = ms.Length;
             var data = await c.PutAsync(result.RequestUri, content);
 
-            var info = await Fxitire.Client.GetObjectInfoAsync(Fxitire.BucketName, filename);
+            var info = await Fixitire.Client.GetObjectInfoAsync(Fixitire.BucketName, filename);
 
             Assert.Equal(info.Size, length);
 
@@ -134,9 +135,9 @@ namespace Minio.Client.Http.Test.Infrastructure
 
             ms.Seek(0, SeekOrigin.Begin);
 
-            var result = await Fxitire.Client.CorePutObjectAsync(Fxitire.BucketName, fileName, new MinioFileRequest(ms));
+            var result = await Fixitire.Client.CorePutObjectAsync(Fixitire.BucketName, fileName, new MinioFileRequest(ms));
 
-            var info = await Fxitire.Client.GetObjectInfoAsync(Fxitire.BucketName, fileName);
+            var info = await Fixitire.Client.GetObjectInfoAsync(Fixitire.BucketName, fileName);
             Assert.NotEqual(0, info.Size);
             Assert.NotNull(info.ETag);
             Assert.Equal(info.ETag, result.ETag);
@@ -158,9 +159,9 @@ namespace Minio.Client.Http.Test.Infrastructure
 
             string name = Guid.NewGuid().ToString() + ".txt";
 
-            var result = await Fxitire.Client.PutObjectAsync(Fxitire.BucketName, name, new MinioFileRequest(ms));
+            var result = await Fixitire.Client.PutObjectAsync(Fixitire.BucketName, name, new MinioFileRequest(ms));
 
-            var info = await Fxitire.Client.GetObjectInfoAsync(Fxitire.BucketName, name);
+            var info = await Fixitire.Client.GetObjectInfoAsync(Fixitire.BucketName, name);
 
             Assert.NotEqual(0, info.Size);
             Assert.NotNull(info.ETag);
@@ -171,7 +172,7 @@ namespace Minio.Client.Http.Test.Infrastructure
         {
             string name = Guid.NewGuid().ToString() + ".txt";
 
-            var id = await Fxitire.Client.InitializeMulipartUploadAsync(Fxitire.BucketName, name);
+            var id = await Fixitire.Client.InitializeMulipartUploadAsync(Fixitire.BucketName, name);
 
             Assert.NotNull(id);
             Assert.NotEmpty(id);
@@ -182,14 +183,14 @@ namespace Minio.Client.Http.Test.Infrastructure
         {
             var destinationFile = Guid.NewGuid().ToString() + ".txt";
 
-            await Fxitire.Client.CopyAsync(new CopyRequest(Fxitire.BucketName,
-                                                      Fxitire.FileName,
-                                                      Fxitire.BucketName,
+            await Fixitire.Client.CopyAsync(new CopyRequest(Fixitire.BucketName,
+                                                      Fixitire.FileName,
+                                                      Fixitire.BucketName,
                                                       destinationFile));
 
-            var result = await Fxitire.Client.GetObjectInfoAsync(Fxitire.BucketName, destinationFile);
+            var result = await Fixitire.Client.GetObjectInfoAsync(Fixitire.BucketName, destinationFile);
 
-            Assert.Equal(Fxitire.FileContent.ToByteArray().Length, result.Size);
+            Assert.Equal(Fixitire.FileContent.ToByteArray().Length, result.Size);
         }
 
 
@@ -198,17 +199,52 @@ namespace Minio.Client.Http.Test.Infrastructure
         {
             var destinationFile = Guid.NewGuid().ToString() + ".txt";
 
-            await Fxitire.Client.CopyAsync(new CopyRequest(Fxitire.BucketName,
-                                                      Fxitire.BigFileName,
-                                                      Fxitire.BucketName,
+            await Fixitire.Client.CopyAsync(new CopyRequest(Fixitire.BucketName,
+                                                      Fixitire.BigFileName,
+                                                      Fixitire.BucketName,
                                                       destinationFile, maxSingleSizeUpload: 5 * 1024 * 1024));
 
-            var result = await Fxitire.Client.GetObjectInfoAsync(Fxitire.BucketName, destinationFile);
+            var result = await Fixitire.Client.GetObjectInfoAsync(Fixitire.BucketName, destinationFile);
 
             Assert.NotNull(result.ETag);
             Assert.Equal(result.Size, 6 * 1024 * 1024L);
         }
+
+        [Fact]
+        public async Task Should_return_list_of_objects_with_prefix()
+        {
+
+            var result = await Fixitire.Client.GetObjectsAsync(new GetObjectsRequests(Fixitire.BucketName, recursive: true, prefix: "data", maxKeys: 1)).ToListAsync();
+
+            Assert.Equal(4, result.Count);
+
+            foreach (var item in result)
+            {
+                var info = await Fixitire.Client.GetObjectInfoAsync(Fixitire.BucketName, item.ObjectName);
+                Assert.Equal(info.ETag, item.ETag);
+                Assert.Equal(info.Size, item.Size);
+                Assert.NotNull(item.LastModified);
+                Assert.Equal(info.LastModified.GetValueOrDefault().UtcDateTime, item.LastModified.GetValueOrDefault().UtcDateTime, TimeSpan.FromSeconds(1.0));
+            }
+
+        }
+
+
+        [Fact]
+        public async Task Should_return_list_of_objects_without_prefix()
+        {
+
+            var result = await Fixitire.Client.GetObjectsAsync(new GetObjectsRequests(Fixitire.BucketName, recursive: true, maxKeys: 1)).ToListAsync();
+
+            foreach (var item in result)
+            {
+                var info = await Fixitire.Client.GetObjectInfoAsync(Fixitire.BucketName, item.ObjectName);
+                Assert.Equal(info.ETag, item.ETag);
+                Assert.Equal(info.Size, item.Size);
+                Assert.NotNull(item.LastModified);
+                Assert.Equal(info.LastModified.GetValueOrDefault().UtcDateTime, item.LastModified.GetValueOrDefault().UtcDateTime, TimeSpan.FromSeconds(1.0));
+            }
+        }
+
     }
-
-
 }

@@ -9,7 +9,7 @@ namespace Minio.Client.Http.Model
                                  long size,
                                  DateTimeOffset? lastModified,
                                  string eTag,
-                                 string contentType,
+                                 string contentType = null,
                                  Dictionary<string, IEnumerable<string>> metadata = null)
         {
             ObjectName = objectName;
