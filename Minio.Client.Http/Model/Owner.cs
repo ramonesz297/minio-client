@@ -22,7 +22,7 @@ namespace Minio.Client.Http.Model
         public string Key { get; set; }
 
         [XmlElement(ElementName = "LastModified")]
-        public DateTimeOffset LastModified { get; set; }
+        public DateTime LastModified { get; set; }
         
         [XmlElement(ElementName = "ETag")]
         public string ETag { get; set; }
