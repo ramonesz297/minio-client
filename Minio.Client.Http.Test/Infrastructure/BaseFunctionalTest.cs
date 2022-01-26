@@ -154,10 +154,13 @@ namespace Minio.Client.Http.Test.Infrastructure
             {
                 ms.Write(guid, 0, guid.Length);
             }
+            
+            ms.Write(new byte[] { 1 }, 0, 1);
 
             ms.Seek(0, SeekOrigin.Begin);
 
             string name = Guid.NewGuid().ToString() + ".txt";
+
 
             var result = await Fixitire.Client.PutObjectAsync(Fixitire.BucketName, name, new MinioFileRequest(ms));
 

@@ -10,11 +10,12 @@ namespace Minio.Client.Http.Internal
         private readonly Stream _stream;
         private readonly long _partSize;
         private readonly bool _leaveOpen;
+        private long _length;
 
         public override bool CanRead => _stream.CanRead;
         public override bool CanSeek => _stream.CanSeek;
         public override bool CanWrite => false;
-        public override long Length => _stream.Length;
+        public override long Length => _length;
         public override long Position { get => _stream.Position; set => _stream.Position = value; }
 
         public long OriginalLength { get; }
@@ -25,6 +26,7 @@ namespace Minio.Client.Http.Internal
 
         internal PartialStream(Stream stream, bool leaveOpen, long? partSize = null)
         {
+            _length = 0;
             var partSizer = new PartSizer(stream.Length, partSize);
             OriginalLength = stream.Length;
             _stream = stream;
@@ -54,23 +56,61 @@ namespace Minio.Client.Http.Internal
 
         public override async Task FlushAsync(CancellationToken cancellationToken)
         {
-            await _stream.FlushAsync(cancellationToken);
+            await _stream.FlushAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
+            if (Position == Length)
+            {
+                return 0;
+            }
+
+            if (Position + count > Length)
+            {
+                count = (int)(Length - Position);
+            }
+
             return _stream.Read(buffer, offset, count);
         }
 
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
+            if (Position == Length)
+            {
+                return 0;
+            }
+
+            if (Position + count > Length)
+            {
+                count = (int)(Length - Position);
+            }
+
             return await _stream.ReadAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
         }
 
 #if NETCOREAPP3_1_OR_GREATER
         public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
         {
-            return await _stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+            if (Position == Length)
+            {
+                return 0;
+            }
+
+            if (Position + buffer.Length > Length)
+            {
+                var count = (int)(Length - Position);
+
+                var limitedBuffer = buffer[0..count];
+
+                count = await _stream.ReadAsync(limitedBuffer, cancellationToken).ConfigureAwait(false);
+
+                return count;
+            }
+            else
+            {
+                return await _stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+            }
         }
 #endif
 
@@ -88,7 +128,7 @@ namespace Minio.Client.Http.Internal
 
         public override void SetLength(long value)
         {
-            _stream.SetLength(value);
+            _length = value;
         }
 
         public override void Write(byte[] buffer, int offset, int count)
@@ -110,7 +150,7 @@ namespace Minio.Client.Http.Internal
         {
             if (!_leaveOpen)
             {
-                await _stream.DisposeAsync();
+                await _stream.DisposeAsync().ConfigureAwait(false);
             }
         }
 #endif
