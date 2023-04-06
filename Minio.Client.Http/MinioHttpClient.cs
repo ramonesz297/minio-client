@@ -11,6 +11,7 @@ using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using System.Xml.Linq;
 
 namespace Minio.Client.Http
@@ -62,10 +63,10 @@ namespace Minio.Client.Http
         public async IAsyncEnumerable<ObjectInformation> GetObjectsAsync(GetObjectsRequests requests, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             ListBucketResult listBucketResult = null;
-
+            var query = requests;
             do
             {
-                using var result = await _httpClient.GetAsync(requests.ToString(), cancellationToken).ConfigureAwait(false);
+                using var result = await _httpClient.GetAsync(query.ToString(), cancellationToken).ConfigureAwait(false);
 
                 result.EnsureSuccessStatusCode();
 
@@ -78,7 +79,17 @@ namespace Minio.Client.Http
 
                 if (listBucketResult.IsTruncated)
                 {
-                    requests = new GetObjectsRequests(requests.Bucket, requests.Recursive, requests.Prefix, requests.MaxKeys, listBucketResult.NextMarker);
+                    var lastKey = listBucketResult.Contents?.LastOrDefault()?.Key;
+
+                    query = new GetObjectsRequests(bucket: requests.Bucket,
+                                                      recursive: requests.Recursive,
+                                                      prefix: requests.Prefix,
+                                                      maxKeys: requests.MaxKeys,
+                                                      marker: string.IsNullOrEmpty(listBucketResult.NextMarker) ? HttpUtility.UrlDecode(lastKey) : HttpUtility.UrlDecode(listBucketResult.NextMarker),
+                                                      useV2: requests.UseV2,
+                                                      versions: requests.Versions,
+                                                      continuationToken: listBucketResult.NextContinuationToken,
+                                                      versionIdMarker: listBucketResult.VersionIdMarker);
                 }
 
             } while (listBucketResult.IsTruncated);

@@ -3,10 +3,10 @@
         <Authors>ramonesz297</Authors>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/ramonesz297/minio-client</RepositoryUrl>
-        <Version>1.0.7</Version>
-        <FileVersion>1.0.7</FileVersion>
-        <PackageVersion>1.0.7</PackageVersion>
-        <AssemblyVersion>1.0.7</AssemblyVersion>
+        <Version>1.0.8</Version>
+        <FileVersion>1.0.8</FileVersion>
+        <PackageVersion>1.0.8</PackageVersion>
+        <AssemblyVersion>1.0.8</AssemblyVersion>
         <RepositoryType>git</RepositoryType>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <IncludeSymbols>true</IncludeSymbols>
