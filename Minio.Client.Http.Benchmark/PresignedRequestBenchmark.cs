@@ -9,7 +9,7 @@ namespace Minio.Client.Http.Benchmark
 {
 
     [MemoryDiagnoser]
-    [SimpleJob(RuntimeMoniker.Net472)]
+    [SimpleJob(RuntimeMoniker.Net70)]
     [SimpleJob(RuntimeMoniker.Net60)]
     public class PresignedRequestBenchmark : BaseMinioBenchmark
     {
@@ -32,7 +32,7 @@ namespace Minio.Client.Http.Benchmark
         [Benchmark(Baseline = true, OperationsPerInvoke = 100)]
         public async Task<string> Restsharp()
         {
-            return await _restSharpMinioClient.PresignedGetObjectAsync(BucketName, FileName, 777);
+            return await _restSharpMinioClient.PresignedGetObjectAsync(new PresignedGetObjectArgs().WithBucket(BucketName).WithObject(FileName).WithExpiry(777));
         }
 
         [Benchmark(OperationsPerInvoke = 100)]

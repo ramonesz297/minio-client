@@ -18,7 +18,7 @@ namespace Minio.Client.Http.Extensions
             {
                 Content = new StringContent("", System.Text.Encoding.UTF8),
             };
-            return await client.SendAsync(r.SetEmptyRequest(), cancellationToken);
+            return await client.SendAsync(r.SetEmptyRequest(), cancellationToken).ConfigureAwait(false);
 
         }
 
@@ -29,7 +29,7 @@ namespace Minio.Client.Http.Extensions
                 Content = new StringContent("", System.Text.Encoding.UTF8),
             };
 
-            return await client.SendAsync(r.SetEmptyRequest(), cancellationToken);
+            return await client.SendAsync(r.SetEmptyRequest(), cancellationToken).ConfigureAwait(false);
 
         }
     }

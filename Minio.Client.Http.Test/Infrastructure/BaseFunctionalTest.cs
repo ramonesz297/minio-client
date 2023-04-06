@@ -196,6 +196,21 @@ namespace Minio.Client.Http.Test.Infrastructure
             Assert.Equal(Fixitire.FileContent.ToByteArray().Length, result.Size);
         }
 
+        [Fact]
+        public async Task Should_copy_with_unescaped_characters()
+        {
+            var destinationFile = Guid.NewGuid().ToString() + "тест тест.txt";
+
+            await Fixitire.Client.CopyAsync(new CopyRequest(Fixitire.BucketName,
+                                                      Fixitire.FileNameCyrillic,
+                                                      Fixitire.BucketName,
+                                                      destinationFile));
+
+            var result = await Fixitire.Client.GetObjectInfoAsync(Fixitire.BucketName, destinationFile);
+
+            Assert.Equal(Fixitire.FileContent.ToByteArray().Length, result.Size);
+        }
+
 
         [Fact]
         public async Task Should_copy_multipart()

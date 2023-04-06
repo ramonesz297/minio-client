@@ -74,7 +74,7 @@ namespace Minio.Client.Http.Extensions
                 return request;
             }
 
-            Stream requestBody = await request.ReadAsStreamAsync(cancellationToken);
+            Stream requestBody = await request.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 
 #if NET5_0_OR_GREATER
             var hash = await requestBody.GetMD5Async(cancellationToken).ConfigureAwait(false);
@@ -100,7 +100,7 @@ namespace Minio.Client.Http.Extensions
 
             if ((request.Method == HttpMethod.Post || request.Method == HttpMethod.Put) && !request.IsEmptyRequest())
             {
-                Stream requestBody = await request.ReadAsStreamAsync(cancellationToken);
+                Stream requestBody = await request.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 
 #if NET5_0_OR_GREATER
                 var hash = await requestBody.GetSHA256Async(cancellationToken).ConfigureAwait(false);
@@ -273,8 +273,6 @@ namespace Minio.Client.Http.Extensions
         public static async Task AddAccessToken(this HttpRequestMessage request, MinioOptions options, CancellationToken cancellationToken = default)
         {
             var now = DateTime.UtcNow;
-            //var now = new DateTime(2022, 01, 14, 17, 42, 0, DateTimeKind.Utc);
-
             await request.AddMD5HeaderAsync(options, cancellationToken).ConfigureAwait(false);
             await request.AddSHA256HeaderAsync(cancellationToken).ConfigureAwait(false);
             request.AddHostHeader();

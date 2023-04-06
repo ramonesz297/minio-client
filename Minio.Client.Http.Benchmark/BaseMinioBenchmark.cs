@@ -19,8 +19,11 @@ namespace Minio.Client.Http.Benchmark
         [GlobalSetup]
         public virtual async Task Setup()
         {
-            _restSharpMinioClient = new MinioClient("play.min.io", "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG")
-                .WithSSL();
+            
+            _restSharpMinioClient = new MinioClient()
+                .WithEndpoint("play.min.io")
+                .WithCredentials("Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG")
+                .WithSSL().Build();
 
             var sc = new ServiceCollection();
 

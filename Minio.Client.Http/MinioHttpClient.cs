@@ -9,7 +9,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -279,6 +278,7 @@ namespace Minio.Client.Http
         public virtual async Task<ObjectInformation> CoreCopyAsync(MultipartCopyRequest copyRequest, CancellationToken cancellationToken = default)
         {
             var destination = new ObjectIdentifire(copyRequest.Request.DestinationBucketName, copyRequest.Request.DestinationObjectName);
+            var source = new ObjectIdentifire(copyRequest.Request.SourceBucketName, copyRequest.Request.SourceObjectName);
 
             var request = new HttpRequestMessage(HttpMethod.Put,
                 $"{destination}{copyRequest}")
@@ -288,8 +288,7 @@ namespace Minio.Client.Http
 
             request.SetEmptyRequest();
 
-            request.Headers.TryAddWithoutValidation("x-amz-copy-source",
-                copyRequest.Request.SourceBucketName + "/" + WebUtility.UrlEncode(copyRequest.Request.SourceObjectName));
+            request.Headers.TryAddWithoutValidation("x-amz-copy-source", source.ToString());
 
             foreach (var item in copyRequest.Request.GetHeaders())
             {
@@ -310,7 +309,7 @@ namespace Minio.Client.Http
             response.EnsureSuccessStatusCode();
             if (copyRequest.Part.HasValue)
             {
-                var result = await response.Content.ReadAsAsync<CopyPartResult>();
+                var result = await response.Content.ReadAsAsync<CopyPartResult>().ConfigureAwait(false);
                 return new ObjectInformation(copyRequest.Request.DestinationObjectName, -1, result.LastModified, result.ETag.Trim('"'), null, null);
             }
             else

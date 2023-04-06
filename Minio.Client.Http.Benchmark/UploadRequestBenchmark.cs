@@ -8,48 +8,48 @@ using System.Threading.Tasks;
 namespace Minio.Client.Http.Benchmark
 {
     [MemoryDiagnoser]
-    [SimpleJob(RunStrategy.Monitoring, RuntimeMoniker.Net472, targetCount: 20)]
-    [SimpleJob(RunStrategy.Monitoring, RuntimeMoniker.Net60, targetCount: 20)]
+    [SimpleJob(RunStrategy.Monitoring, RuntimeMoniker.Net60)]
+    [SimpleJob(RunStrategy.Monitoring, RuntimeMoniker.Net70)]
     public class UploadRequestBenchmark : BaseMinioBenchmark
     {
-        private MemoryStream content = null!;
-        private MemoryStream content2 = null!;
+        private MemoryStream _content = null!;
+        private MemoryStream _content2 = null!;
 
         public override async Task Setup()
         {
             await base.Setup();
-            content = new MemoryStream(10 * 1024 * 1024);
-            content2 = new MemoryStream(10 * 1024 * 1024);
+            _content = new MemoryStream(10 * 1024 * 1024);
+            _content2 = new MemoryStream(10 * 1024 * 1024);
             var guid = Guid.NewGuid().ToByteArray();
-            while (content.Length < 10 * 1024 * 1024)
+            while (_content.Length < 10 * 1024 * 1024)
             {
-                content.Write(guid, 0, guid.Length);
-                content2.Write(guid, 0, guid.Length);
+                _content.Write(guid, 0, guid.Length);
+                _content2.Write(guid, 0, guid.Length);
             }
-            content.Seek(0, SeekOrigin.Begin);
-            content2.Seek(0, SeekOrigin.Begin);
+            _content.Seek(0, SeekOrigin.Begin);
+            _content2.Seek(0, SeekOrigin.Begin);
         }
 
         public override void CleanUp()
         {
             base.CleanUp();
-            content.Dispose();
-            content2.Dispose();
+            _content.Dispose();
+            _content2.Dispose();
         }
 
 
         [Benchmark(Baseline = true)]
         public async Task Restsharp()
         {
-            content.Seek(0, SeekOrigin.Begin);
-            await _restSharpMinioClient.PutObjectAsync(BucketName, $"{Guid.NewGuid()}.txt", content, content.Length);
+            _content.Seek(0, SeekOrigin.Begin);
+            await _restSharpMinioClient.PutObjectAsync(new PutObjectArgs().WithBucket(BucketName).WithFileName($"{Guid.NewGuid()}.txt").WithStreamData(_content).WithObjectSize(_content.Length));
         }
 
         [Benchmark()]
         public async Task HttpClient()
         {
-            content2.Seek(0, SeekOrigin.Begin);
-            await _client.PutObjectAsync(BucketName, $"{Guid.NewGuid()}.txt", new MinioFileRequest(content2), true);
+            _content2.Seek(0, SeekOrigin.Begin);
+            await _client.PutObjectAsync(BucketName, $"{Guid.NewGuid()}.txt", new MinioFileRequest(_content2), true);
         }
     }
 }

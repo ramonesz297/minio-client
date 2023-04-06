@@ -14,6 +14,9 @@ namespace Minio.Client.Http.Test.Infrastructure
 
         public string FileName { get; } = Guid.NewGuid().ToString() + ".txt";
 
+
+        public string FileNameCyrillic { get; } = Guid.NewGuid().ToString() + "тест назва.txt";
+
         public string BigFileName { get; } = Guid.NewGuid().ToString() + ".txt";
 
         public IMinioHttpClient Client => sp.GetRequiredService<IMinioHttpClient>();
@@ -45,6 +48,10 @@ namespace Minio.Client.Http.Test.Infrastructure
             ms.Seek(0, SeekOrigin.Begin);
 
             var result = await Client.PutObjectAsync(BucketName, FileName, new MinioFileRequest(ms), true);
+
+            ms.Seek(0, SeekOrigin.Begin);
+
+            await Client.PutObjectAsync(BucketName, FileNameCyrillic, new MinioFileRequest(ms), true);
 
             using var ms2 = new MemoryStream();
             var guid = Guid.NewGuid().ToByteArray();

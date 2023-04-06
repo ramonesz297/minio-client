@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net5.0;netstandard2.0;net461;</TargetFrameworks>
+		<TargetFrameworks>net7.0;net6.0;netstandard2.0</TargetFrameworks>
 		<LangVersion>8.0</LangVersion>
 		<Nullable>disable</Nullable>
 		<PackageId>Minio.Client.Http</PackageId>
@@ -12,16 +12,12 @@
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
 		<PackageReference Include="System.Net.Http" Version="4.3.4" />
-		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
 	</ItemGroup>
 
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-		<Reference Include="System.Net.Http"  />
-		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0"/>
-	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Options" Version="3.1.22" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
 	</ItemGroup>
 
 </Project>

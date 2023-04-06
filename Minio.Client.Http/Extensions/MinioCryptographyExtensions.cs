@@ -30,7 +30,7 @@ namespace Minio.Client.Http.Extensions
         public static async Task<string> GetMD5Async(this Stream stream, CancellationToken cancellationToken = default)
         {
             using var md5 = MD5.Create();
-            var hash = await md5.ComputeHashAsync(stream, cancellationToken);
+            var hash = await md5.ComputeHashAsync(stream, cancellationToken).ConfigureAwait(false);
             return Convert.ToBase64String(hash);
         }
 #endif
@@ -64,7 +64,7 @@ namespace Minio.Client.Http.Extensions
             var input = sb.ToString();
 
             using var owner = System.Buffers.MemoryPool<byte>.Shared.Rent(input.Length);
-
+            
             var count = Encoding.UTF8.GetBytes(input.AsSpan(), owner.Memory.Span);
 
             using var sha = SHA256.Create();
