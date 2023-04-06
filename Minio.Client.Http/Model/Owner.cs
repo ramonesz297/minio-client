@@ -23,16 +23,16 @@ namespace Minio.Client.Http.Model
 
         [XmlElement(ElementName = "LastModified")]
         public DateTime LastModified { get; set; }
-        
+
         [XmlElement(ElementName = "ETag")]
         public string ETag { get; set; }
-        
+
         [XmlElement(ElementName = "Size")]
         public long Size { get; set; }
-        
+
         [XmlElement(ElementName = "Owner")]
         public Owner Owner { get; set; }
-        
+
         [XmlElement(ElementName = "StorageClass")]
         public string StorageClass { get; set; }
     }
@@ -43,32 +43,39 @@ namespace Minio.Client.Http.Model
     {
         [XmlElement(ElementName = "Name")]
         public string Name { get; set; }
-       
+
         [XmlElement(ElementName = "Prefix")]
         public string Prefix { get; set; }
-        
+
         [XmlElement(ElementName = "Marker")]
         public string Marker { get; set; }
 
         [XmlElement(ElementName = "NextMarker")]
         public string NextMarker { get; set; }
 
+        [XmlElement(ElementName = "VersionIdMarker")]
+        public string VersionIdMarker { get; set; }
+
+        [XmlElement(ElementName = "NextContinuationToken")]
+        public string NextContinuationToken { get; set; }
+
         [XmlElement(ElementName = "MaxKeys")]
         public int MaxKeys { get; set; }
-        
+
+        [XmlElement(ElementName = "KeyCount")]
+        public int? KeyCount { get; set; }
+
         [XmlElement(ElementName = "Delimiter")]
         public string Delimiter { get; set; }
 
-        
         [XmlElement(ElementName = "IsTruncated")]
         public bool IsTruncated { get; set; }
-        
+
         [XmlElement(ElementName = "Contents")]
         public List<Contents> Contents { get; set; }
-        
+
         [XmlElement(ElementName = "EncodingType")]
         public string EncodingType { get; set; }
-        
 
     }
 
