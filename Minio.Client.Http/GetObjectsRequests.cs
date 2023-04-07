@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Text;
 
 namespace Minio.Client.Http
@@ -56,7 +57,7 @@ namespace Minio.Client.Http
                 sb.Append("delimiter=").Append('/').Append('&');
             }
 
-            sb.Append("prefix=").Append(Prefix).Append('&');
+            sb.Append("prefix=").Append(Uri.EscapeDataString(Prefix)).Append('&');
 
             sb.Append("max-keys=").Append(MaxKeys).Append('&');
 
@@ -66,11 +67,11 @@ namespace Minio.Client.Http
                 sb.Append("versions=").Append('&');
                 if (!string.IsNullOrEmpty(Marker))
                 {
-                    sb.Append("key-marker=").Append(Marker).Append('&');
+                    sb.Append("key-marker=").Append(Uri.EscapeDataString(Marker)).Append('&');
                 }
                 if (!string.IsNullOrEmpty(VersionIdMarker))
                 {
-                    sb.Append("version-id-marker=").Append(VersionIdMarker).Append('&');
+                    sb.Append("version-id-marker=").Append(Uri.EscapeDataString(VersionIdMarker)).Append('&');
                 }
             }
             else if (!Versions && UseV2)
@@ -78,18 +79,18 @@ namespace Minio.Client.Http
                 sb.Append("list-type=").Append(2).Append('&');
                 if (!string.IsNullOrEmpty(Marker))
                 {
-                    sb.Append("start-after=").Append(Marker).Append('&');
+                    sb.Append("start-after=").Append(Uri.EscapeDataString(Marker)).Append('&');
                 }
                 if (!string.IsNullOrEmpty(ContinuationToken))
                 {
-                    sb.Append("continuation-token=").Append(ContinuationToken).Append('&');
+                    sb.Append("continuation-token=").Append(Uri.EscapeDataString(ContinuationToken)).Append('&');
                 }
             }
             else if (!Versions && !UseV2)
             {
-                sb.Append("marker=").Append(Marker).Append('&');
+                sb.Append("marker=").Append(Uri.EscapeDataString(Marker)).Append('&');
             }
-            
+
             sb.Append("encoding-type=url");
 
             return sb.ToString();

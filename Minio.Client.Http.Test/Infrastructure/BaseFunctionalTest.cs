@@ -225,7 +225,7 @@ namespace Minio.Client.Http.Test.Infrastructure
             var result = await Fixitire.Client.GetObjectInfoAsync(Fixitire.BucketName, destinationFile);
 
             Assert.NotNull(result.ETag);
-            Assert.Equal(result.Size, 6 * 1024 * 1024L);
+            Assert.Equal(6 * 1024 * 1024L, result.Size);
         }
 
         [Fact]
