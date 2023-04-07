@@ -154,6 +154,15 @@ namespace Minio.Client.Http.Extensions
             return new SortedDictionary<string, StringValues>(headers, StringComparer.Ordinal);
         }
 
+        internal static HttpRequestMessage SortQuery(this HttpRequestMessage request)
+        {
+            var queryCollection = new QueryStringCollection(request.RequestUri.GetComponents(UriComponents.Query, UriFormat.UriEscaped), false);
+            var uriBuilder = new UriBuilder(request.RequestUri);
+            uriBuilder.Query = queryCollection.ToString();
+            request.RequestUri = uriBuilder.Uri;
+            return request;
+
+        }
         internal static QueryStringCollection GetQuery(this HttpRequestMessage request, bool escape = true)
         {
             return request.RequestUri.GetQuery(escape);
@@ -273,6 +282,7 @@ namespace Minio.Client.Http.Extensions
         public static async Task AddAccessToken(this HttpRequestMessage request, MinioOptions options, CancellationToken cancellationToken = default)
         {
             var now = DateTime.UtcNow;
+            request = request.SortQuery();
             await request.AddMD5HeaderAsync(options, cancellationToken).ConfigureAwait(false);
             await request.AddSHA256HeaderAsync(cancellationToken).ConfigureAwait(false);
             request.AddHostHeader();
